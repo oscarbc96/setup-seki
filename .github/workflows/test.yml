@@ -27,19 +27,19 @@ jobs:
       with:
         version: ${{ matrix.version }}
 
-    - name: Capture gh version installed
+    - name: Capture seki version installed
       run: |
-        export GH_VERSION=$( seki version )
-        echo 'GH_VERSION_INSTALLED<<EOF' >> $GITHUB_ENV
+        export SEKI_VERSION=$( seki version )
+        echo 'SEKI_VERSION_INSTALLED<<EOF' >> $GITHUB_ENV
         seki version >> $GITHUB_ENV
         echo 'EOF' >> $GITHUB_ENV
 
     - name: Verify
       shell: python
       env:
-        GH_VERSION_EXPECTED: ${{ matrix.version }}
+        SEKI_VERSION_EXPECTED: ${{ matrix.version }}
       run: |
         import sys, os
         sys.exit(
-            int(not os.environ["GH_VERSION_EXPECTED"] in os.environ["GH_VERSION_INSTALLED"])
+            int(not os.environ["SEKI_VERSION_EXPECTED"] in os.environ["SEKI_VERSION_INSTALLED"])
         )

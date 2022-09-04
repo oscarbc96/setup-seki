@@ -4,10 +4,9 @@ require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 /***/ 2932:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const path = __nccwpck_require__(1017);
 const core = __nccwpck_require__(2186);
 const tc = __nccwpck_require__(7784);
-const { getDownloadObject } = __nccwpck_require__(918);
+const { getDownloadURL } = __nccwpck_require__(918);
 
 async function setup() {
   try {
@@ -15,15 +14,15 @@ async function setup() {
     const version = core.getInput('version');
 
     // Download the specific version of the tool, e.g. as a tarball/zipball
-    const download = getDownloadObject(version);
-    const pathToTarball = await tc.downloadTool(download.url);
+    const downloadURL = getDownloadURL(version);
+    const pathToTarball = await tc.downloadTool(downloadURL);
 
     // Extract the tarball/zipball onto host runner
-    const extract = download.url.endsWith('.zip') ? tc.extractZip : tc.extractTar;
+    const extract = downloadURL.endsWith('.zip') ? tc.extractZip : tc.extractTar;
     const pathToCLI = await extract(pathToTarball);
 
     // Expose the tool by adding it to the PATH
-    core.addPath(path.join(pathToCLI, download.binPath));
+    core.addPath(pathToCLI);
   } catch (e) {
     core.setFailed(e);
   }
@@ -42,7 +41,6 @@ if (require.main === require.cache[eval('__filename')]) {
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 const os = __nccwpck_require__(2037);
-const path = __nccwpck_require__(1017);
 
 // arch in [arm, x32, x64...] (https://nodejs.org/api/os.html#os_os_arch)
 // return value in [amd64, 386, arm]
@@ -63,19 +61,14 @@ function mapOS(os) {
   return mappings[os] || os;
 }
 
-function getDownloadObject(version) {
+function getDownloadURL(version) {
   const platform = os.platform();
   const filename = `seki_${ version }_${ mapOS(platform) }_${ mapArch(os.arch()) }`;
   const extension = platform === 'win32' ? 'zip' : 'tar.gz';
-  const binPath = platform === 'win32' ? 'bin' : path.join(filename, 'bin');
-  const url = `https://github.com/oscarbc96/seki/releases/download/${ version }/${ filename }.${ extension }`;
-  return {
-    url,
-    binPath
-  };
+  return `https://github.com/oscarbc96/seki/releases/download/${ version }/${ filename }.${ extension }`;
 }
 
-module.exports = { getDownloadObject }
+module.exports = { getDownloadURL }
 
 
 /***/ }),

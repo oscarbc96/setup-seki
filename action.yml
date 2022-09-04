@@ -1,0 +1,10 @@
+name: setup-seki
+description: Setup seki on GitHub Actions runners
+inputs:
+  version:
+    description: Version of seki to install
+    required: false
+    default: 0.0.9
+runs:
+  using: node16
+  main: dist/index.js
